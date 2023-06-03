@@ -34,7 +34,7 @@ def generate_data(rows):
 
 
 def write_to_csv(data_list):
-    file_name = "data.csv"
+    file_name = "data/data.csv"
     with open(file_name, "w", newline="", encoding="UTF8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Location Name", "X Coordinate", "Y Coordinate"])

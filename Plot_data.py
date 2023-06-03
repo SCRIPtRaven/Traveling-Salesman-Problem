@@ -171,7 +171,7 @@ def init_animation():
     total_distance.set("Total Distance: 0")
 
 
-def embed_plot_in_tkinter(data):
+def create_gui(data):
     global fig, ax, route_trace, data_list, anim, canvas, method, history_text, history, total_distance
     data_list = data
     history = []
@@ -201,6 +201,9 @@ def embed_plot_in_tkinter(data):
     canvas = tkagg.FigureCanvasTkAgg(fig, master=left_frame)
     canvas.draw()
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    middle_frame = tk.Frame(paned_window)
+    paned_window.add(middle_frame)
 
     # Create a frame on the right side of the PanedWindow for other content
     right_frame = tk.Frame(paned_window)
@@ -234,6 +237,6 @@ def embed_plot_in_tkinter(data):
 
 if __name__ == "__main__":
     start_location = 0
-    file_name = "data.csv"
+    file_name = "data/data.csv"
     data_list = read_data_from_csv(file_name)
-    embed_plot_in_tkinter(data_list)
+    create_gui(data_list)
