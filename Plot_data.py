@@ -193,7 +193,7 @@ def create_gui(data):
     paned_window.add(left_frame)
 
     # Set the initial width and minimum width of the left frame
-    left_frame_width = 1100
+    left_frame_width = 1600
     left_frame.config(width=left_frame_width)
     paned_window.paneconfigure(left_frame, minsize=left_frame_width)
 
@@ -237,6 +237,6 @@ def create_gui(data):
 
 if __name__ == "__main__":
     start_location = 0
-    file_name = "data/data.csv"
+    file_name = "model/data.csv"
     data_list = read_data_from_csv(file_name)
     create_gui(data_list)

@@ -1,6 +1,11 @@
 import csv
+import os
 import random
 import geonamescache
+
+
+MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE_NAME = os.path.join(MODEL_DIR, "data.csv")
 
 
 def is_ascii(s):
@@ -34,16 +39,25 @@ def generate_data(rows):
 
 
 def write_to_csv(data_list):
-    file_name = "data/data.csv"
-    with open(file_name, "w", newline="", encoding="UTF8") as csvfile:
+    with open(FILE_NAME, "w", newline="", encoding="UTF8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Location Name", "X Coordinate", "Y Coordinate"])
         writer.writerows(data_list)
 
-    print(f"Data saved to {file_name}.")
+    print(f"Data saved to {FILE_NAME}.")
 
 
-if __name__ == "__main__":
-    num_rows = 1000
+def read_data_from_csv():
+    data_list = []
+    with open(FILE_NAME, 'r') as file:
+        next(file)  # Skip the header line
+        for line in file:
+            line = line.strip().split(',')
+            data_list.append([line[0], float(line[1]), float(line[2])])
+    return data_list
+
+
+def main():
+    num_rows = 100
     data = generate_data(num_rows)
     write_to_csv(data)
