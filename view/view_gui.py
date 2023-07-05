@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
 from matplotlib.animation import FuncAnimation
 
-from controller import controller
-from model import model_data, model_calculations
 
 start_location = 0
 DATA_LIST = None
