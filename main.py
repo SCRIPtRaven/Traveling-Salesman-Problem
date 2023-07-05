@@ -1,6 +1,5 @@
-from model import model_data
-from view import gui
+from controller import controller
 
 if __name__ == "__main__":
-    model_data.main()
-    gui.main()
+    c = controller.Controller()
+    c.start()

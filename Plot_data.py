@@ -128,6 +128,7 @@ def update(frame, route, data, route_trace):
     route_x = []
     route_y = []
     distance = 0
+    print(data)
     for i in range(frame + 1):
         location_index = route[i]
         location = data[location_index]

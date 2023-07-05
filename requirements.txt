@@ -1,2 +1,0 @@
-geonamescache==1.6.0
-matplotlib==3.7.1

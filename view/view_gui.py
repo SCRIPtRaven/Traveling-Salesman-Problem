@@ -4,11 +4,15 @@ import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
 from matplotlib.animation import FuncAnimation
 
-from controller import calculations
-from model import model_data
+from controller import controller
+from model import model_data, model_calculations
 
 start_location = 0
-DATA_LIST = model_data.read_data_from_csv()
+DATA_LIST = None
+
+
+def get_start():
+    return start_location
 
 
 def create_plot():
@@ -30,7 +34,7 @@ def create_plot():
 
 
 def on_plot_click(event):
-    global start_location, scatter, ax, route_trace
+    global start_location, scatter, ax, route_trace, DATA_LIST
     if event.inaxes is None:  # Ignore clicks outside the axes
         return
     min_distance = float('inf')
@@ -55,15 +59,16 @@ def on_plot_click(event):
     canvas.draw()  # redraw the canvas to show the new start location
 
 
-def start_animation():
+def start_animation(contr):
     global fig, ax, route_trace, DATA_LIST, anim, canvas, history_text, history, total_distance
-    route = calculations.calculate_route(DATA_LIST)
-    anim = FuncAnimation(fig, update, fargs=(route, DATA_LIST, route_trace), frames=len(route), interval=0.001,
+    route = contr.handle_route_request()
+    anim = FuncAnimation(fig, update, fargs=(route, DATA_LIST, route_trace, contr), frames=len(route), interval=0.001,
                          repeat=False, blit=False, init_func=init_animation)
     # update history after the animation has finished
-    history.append((method.get(), calculations.calculate_total_distance(route, DATA_LIST)))
+    history.append((contr.handle_method_request(), contr.handle_total_distance_request(route)))
     history = history[-10:]  # keep only the last 10 entries
-    history_text.set("\n".join(["Method: {}, Distance: {}".format("Greedy" if x[0] == 1 else "Random", x[1]) for x in history]))
+    history_text.set(
+        "\n".join(["Method: {}, Distance: {}".format("Greedy" if x[0] == 1 else "Random", x[1]) for x in history]))
     canvas.draw()  # redraw the canvas after starting the animation
 
 
@@ -73,7 +78,7 @@ def init_animation():
     total_distance.set("Total Distance: 0")
 
 
-def update(frame, route, data, route_trace):
+def update(frame, route, data, route_trace, contr):
     route_x = []
     route_y = []
     distance = 0
@@ -84,13 +89,14 @@ def update(frame, route, data, route_trace):
         route_y.append(location[2])
         if i > 0:
             # update the total distance as the animation progresses
-            distance += calculations.calculate_distance(data[route[i]], data[route[i - 1]])
+            distance += contr.handle_distance_request(data[route[i]], data[route[i - 1]])
     route_trace.set_data(route_x, route_y)
     total_distance.set("Total Distance: " + str(round(distance, 2)))  # update the distance
 
 
-def create_gui():
-    global fig, ax, route_trace, DATA_LIST, anim, canvas, method, history_text, history, total_distance
+def create_gui(contr):
+    global fig, ax, route_trace, DATA_LIST, anim, canvas, history_text, history, total_distance
+
     history = []
     root = tk.Tk()
     root.title("Traveling Salesman Problem")
@@ -99,7 +105,7 @@ def create_gui():
 
     fig, ax, route_trace = create_plot()
 
-    fig.canvas.mpl_connect('button_press_event', on_plot_click)
+    fig.canvas.mpl_connect('button_press_event', contr.handle_start_selection)
 
     # Create a PanedWindow to divide the GUI into two resizable parts
     paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
@@ -128,12 +134,12 @@ def create_gui():
 
     # Create a radio button for method selection
     method = tk.IntVar()
-    tk.Radiobutton(right_frame, text="Greedy", variable=method, value=1).pack(anchor='w')
-    tk.Radiobutton(right_frame, text="Random", variable=method, value=2).pack(anchor='w')
     method.set(1)  # set default method to Greedy
+    tk.Radiobutton(right_frame, text="Greedy", variable=method, value=1, command=lambda: contr.handle_solution_selection(method.get())).pack(anchor='w')
+    tk.Radiobutton(right_frame, text="Random", variable=method, value=2, command=lambda: contr.handle_solution_selection(method.get())).pack(anchor='w')
 
     # Create a Start button at the bottom of the right frame
-    start_button = tk.Button(right_frame, text="Start", command=start_animation)
+    start_button = tk.Button(right_frame, text="Start", command=contr.handle_start_button)
     start_button.pack(side=tk.BOTTOM, fill=tk.X)
 
     # Create a field for the total distance
@@ -150,5 +156,7 @@ def create_gui():
     root.mainloop()
 
 
-def main():
-    create_gui()
+def main(contr):
+    global DATA_LIST
+    DATA_LIST = contr.handle_data_request()
+    create_gui(contr)
