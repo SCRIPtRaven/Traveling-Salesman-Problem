@@ -16,6 +16,15 @@ class ModelCalculations:
         distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
         return distance
 
+    def calculate_total_distance(self, route):
+        total_distance = 0
+        for i in range(len(route) - 1):
+            point1 = route[i]
+            point2 = route[(i + 1) % len(route)]
+            distance = self.calculate_distance(self.DATA_LIST[point1], self.DATA_LIST[point2])
+            total_distance += distance
+        return total_distance
+
     def calculate_route(self, contr):
         # use the appropriate method based on the checkbox value
         if self.METHOD == 1:
@@ -63,12 +72,3 @@ class ModelCalculations:
             current_location = nearest_location
 
         return route
-
-    def calculate_total_distance(self, route):
-        total_distance = 0
-        for i in range(len(route) - 1):
-            point1 = route[i]
-            point2 = route[(i + 1) % len(route)]
-            distance = self.calculate_distance(self.DATA_LIST[point1], self.DATA_LIST[point2])
-            total_distance += distance
-        return total_distance

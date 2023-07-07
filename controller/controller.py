@@ -1,12 +1,12 @@
-from model import model_data, model_calculations
+from model import model_data, model_logic
 from view import view_gui
 
 
 class Controller:
     def __init__(self):
         self.model_data = model_data.ModelData()
-        self.model_calculations = model_calculations.ModelCalculations()
-        self.view = view_gui
+        self.model_calculations = model_logic.ModelCalculations()
+        self.view = view_gui.ViewGUI(self)
 
     def generate_data(self):
         self.model_data.start()
@@ -15,7 +15,7 @@ class Controller:
         return self.model_data.read_data_from_csv()
 
     def start(self):
-        self.view.main(self)
+        self.view.create_gui()
 
     def handle_solution_selection(self, selected: int):
         self.model_calculations.METHOD = selected
@@ -24,7 +24,7 @@ class Controller:
         self.view.on_plot_click(event)
 
     def handle_start_button(self):
-        self.view.start_animation(self)
+        self.view.start_animation()
 
     def handle_route_request(self):
         return self.model_calculations.calculate_route(self)
